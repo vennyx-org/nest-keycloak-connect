@@ -77,6 +77,15 @@ export class AuthGuard implements CanActivate {
       this.multiTenant,
       this.keycloakOpts,
     );
+
+    if (this.keycloakOpts.tokenValidation == TokenValidation.NONE) {
+      request.user = parseToken(jwt);
+      request.accessToken = jwt;
+      this.logger.verbose(`User authenticated`, { user: request.user });
+
+      return true;
+    }
+
     const isValidToken = await this.validateToken(keycloak, jwt);
 
     if (isValidToken) {
